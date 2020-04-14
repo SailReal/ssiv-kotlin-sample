@@ -2,20 +2,22 @@ package com.davemorrissey.labs.subscaleview.sample.viewpager
 
 import android.os.Bundle
 import android.app.Fragment
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
 import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.sample.R.layout
 
 import kotlinx.android.synthetic.main.view_pager_page.imageView
 
 class ViewPagerFragment : Fragment() {
 
-    private var asset: String? = null
+    private var asset: Uri? = null
 
-    fun setAsset(asset: String) {
+    fun setAsset(asset: Uri) {
         this.asset = asset
     }
 
@@ -26,10 +28,11 @@ class ViewPagerFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (asset == null && savedInstanceState?.containsKey(BUNDLE_ASSET) == true) {
-            asset = savedInstanceState.getString(BUNDLE_ASSET)
+            asset = Uri.parse(savedInstanceState.getString(BUNDLE_ASSET))
         }
         asset?.let {
-            imageView.setImage(ImageSource.asset(it))
+			imageView.orientation = SubsamplingScaleImageView.ORIENTATION_USE_EXIF
+			imageView.setImage(ImageSource.uri(it))
         }
     }
 
@@ -37,7 +40,7 @@ class ViewPagerFragment : Fragment() {
         super.onSaveInstanceState(outState)
         val rootView = view
         if (rootView != null) {
-            outState?.putString(BUNDLE_ASSET, asset)
+            outState?.putString(BUNDLE_ASSET, asset.toString())
         }
     }
 
